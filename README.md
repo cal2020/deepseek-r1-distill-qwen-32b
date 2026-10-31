@@ -1,6 +1,23 @@
 # Tutorial - Deploy DeepSeek-R1-Distill-Qwen-32B using Inferless
 [DeepSeek-R1-Distill-Qwen-32B](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B) is a distilled variant within the DeepSeek-R1 series. The dataset used for training is meticulously curated from the DeepSeek-R1 model, with Qwen2.5-32B serving as the foundational base model. This model has undergone supervised fine-tuning to achieve enhanced performance and efficiency.
 
+## Model acquisition, GPU and billing prerequisites
+
+This repository is an **Inferless deployment example**, not a pretrained model distribution or training-data release. The model weights come from [DeepSeek-R1-Distill-Qwen-32B on Hugging Face](https://huggingface.co/deepseek-ai/DeepSeek-R1-Distill-Qwen-32B); check the model card and applicable model license before serving it. No model weights or fine-tuning dataset are checked in.
+
+**What you must provide:** an Inferless account/workspace, authorization to import this GitHub source, a supported GPU machine/region and spending allowance. The checked-in [`inferless.yaml`](inferless.yaml) config proposes a **dedicated A100** with 200 GiB host RAM, 20 vCPUs and `min_replica: 0`; these are template choices, not confirmed available products or prices. Determine the current GPU rate, minimum charge, storage and idle/scale-down charges **before deploying**.
+
+### End-to-end deployment checklist
+
+1. Fork or otherwise authorize this repo for your Inferless workspace.
+2. Review [`app.py`](app.py), [`input_schema.py`](input_schema.py), [`inferless-runtime-config.yaml`](inferless-runtime-config.yaml) and [`inferless.yaml`](inferless.yaml). Confirm package versions and the model identifier against current provider APIs.
+3. Create/select a compatible Inferless runtime and GPU in your region. Update `inferless.yaml` with the current workspace, runtime and resource settings; a blank custom-runtime ID does **not** provision the selected runtime automatically.
+4. Import the Git repository as custom code, supply required secrets using the provider's secret store, and deploy.
+5. Inspect provider logs for model download, tokenizer initialization and inference readiness. Use the exact endpoint and bearer token issued for **your deployment** to send the documented `curl` request.
+6. Track cost and latency on your own hardware. The throughput, cold-start and token rate values below are historical example measurements, **not guarantees**.
+
+**No separate dataset acquisition is required for inference.** Text prompts are supplied as requests. If you want to fine-tune, obtain an authorized corpus separately; training, evaluation and dataset licenses are outside this sample's scope.
+
 ## TL;DR:
 - Deployment of DeepSeek-R1-Distill-Qwen-32B model using [vLLM](https://github.com/vllm-project/vllm).
 - You can expect an average tokens/sec of `21.95` and a latency of `5.88` sec for generating a text of `128` tokens. This setup has an average cold start time of `39.95` sec.
